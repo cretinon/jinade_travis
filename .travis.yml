@@ -1,0 +1,28 @@
+os: linux
+dist: trusty
+cache: false
+sudo: required
+language: bash
+services: docker
+env:
+  matrix:
+    - ARCH=x86_64 DISTRIB=debian
+    - ARCH=x86_64 DISTRIB=alpine
+#    - ARCH=armhf DISTRIB=debian
+#    - ARCH=armhf DISTRIB=alpine
+  global:
+  - secure: Xx2yvqayRGRmZ4wUITgI2FDKtfh408LoEVFmvGyzrdiRR1LurE1PgfqqAfCzYN/LcH4crIF1PW+snIHgAPsge/DRRASP2gegFMi0B6mAJZrQEkAOyBu4wJYdt/bzcdf9O5bteQLlCB2VI8gFRKB/5lneNz0OrZckmZAM4zCt//+WYZw1v16XdyjyLgX+qX0mAYNYL4Dxkz7NseUk80DsBjRm7Hfr/8xO7ymD4qEEK/y2HElqPH0je/8NZsBIpGbeTyzXcoVayHx7qe+DPw5l8sq/jYiwVrCEiytVlvnCSXJ/w9wdrR18zCx7bzCf27n81Mkl37wxeMEDLhuwZudNco0Y1HkBfqs36HUfWTwek3mp9fxkfSV6Y2h+1CxCENTdcYlExbC3qcIt2czQmcHiGSswIv9Jh+bgHx2nf4qQxt3RF3SozO8MzrOkxkoLqrJNLc6rSgR4A7yOcbMOJJ54jeVMtmf9HHxofRu1QaO3JMLBBNK1EWjdhun+BohRUspsbJbW+8Vq1nz4GsrmBBH+TptYPi1KmV4Sh95QaEkyKQAYKIcekktf2Q+W6OzxnM+FL9Iq50TJ0G8aikEvSr7lBa4/XfGMNBHNZ8M3z1yeXuY6lM0CmDwi/nKIfAZJwxW/ObS34F28mmncU5c6joazmR+WPxIdrlSsFIZNgqpksYo=
+  - secure: n7Zr1nAVQHpeqj0gYsa93LXLqiMH8/jN5jgqw9hYk6RFBXX3PVnAFaS1WyVVAyuGNSNCcvE4wePVYJJBkuGQ3tlO7pKvlrLfBzwunMJdJktzqNrTQbUDUZT8YOTsevDTE+otVdGWjck5sNsNN+cKl74BTEQo4DL5y3JB6CSEw9cWEfaqmw/fualmMzZ4RP5MdXbH4nAVPPCEGXAPJ+N4zN6TvhzWAgH0AaRb/VxEwZ78dw00azi+n+HvCoA7CVsoogC+A8hvw5b/dKeIpLlQZCJnqobr3FnwMLSMIlTA/TD6brqoDleOoJWWo4pzbQlwEQd7zSaLLx/OLAl98xn/yzrmPdhGawWbYIK5hnVPrDT6siVnM+ELc+xiU0qJ885PmsEe09COBk2/jJCLPXiSZhTei7nDNzYB29JvoD8D4BIpyYFOy2iF23uPGZhIw4QMJxzqw/ieLHCyX70vWqezcz61G4EcsAUEcFoK2n6yr7PMyIhwrP8/JNtetk1VPts5U1zFg2Yw5wrZFHSHxF3lT0uvsBEB6GVzkOcrkZpZkolOUkFgI8t+e7nfNtJzKTzLNzs/wTke3kCm/o7rM1npGeAkThR/v3FX595mkxTlor9D8AFmuw9vO5WBIiAjFL9cuDU+G0bFjpdcY5egV4W8pqB3N8sPmy3VJ6Y1tammtZs=
+  - secure: Sv2pyT+An9kdoP6C+msPzYintvtN2oCaQO9EDaeJVLZ83pRDkE/sE7eJeDqL1of7OUhnlp2UA+U2srFf59f0OGvPmPwittjiGCn3eEboNPzTmBsgJoXWb70R5jTvmty5Doq3RYzG6gACJpskNyu7r1UAc6whNJGQMaebjVGWm/Pi3McKuBUKOFXxcU7Gza/73Id0Llps3W+GPJnDw9exDz7u4E+cioy8QDMaXU4u1WPynHL8wuoOISN1JLA/JYMt1dVQvjhFGJfDpw6Up1PcYE4QkvRF/Cw0s+kzFlyrSUULAKQySpj+QnvoInsSd2KTmoZ3ec2477o7Vn6Y42bXpF/bTU5Lo9iMVlyuvrmLZot0hPS9cmI0pY186SbwPcb+ubWsVdAZzMCO2gNBYjOuT7mRAlEnmuBQrSyYU71WBAuSb/rSXDXOuzjV+aen2HuN6EDXWCUGHHEqxk2+v0ieZO6Bw1wnY8sZPB+AqwmD0NKoPoj+63/+KEfavvxQ0zIgDVWRF7nG3rD1ZHK9klNhgBDVxFzP9v4c0WZLpWblhh1GXv/wt+jGSDS5bW7hnVTsvrYiUL3Zx2Kt0azPQB1x6wITJyzPHKbWEMYSvJvvMnqqDDHeWZiiyx0QTm7kYE7wHrzDF61/46PTVTZrxora/BJQqPjhD+kTPDj07nCm7Sc=
+install: true
+before_script:
+- docker --version
+- make --version
+script:
+  - make ARCH=${ARCH} DISTRIB=${DISTRIB} build test
+after_success:
+- docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+- make ARCH=${ARCH} DISTRIB=${DISTRIB} push
+after_script:
+- docker logout
+- make clean
